@@ -54,33 +54,27 @@ export async function POST(req) {
   const updatedResources = await req.json();
 
   try {
-    // 尝试更新 GitHub 仓库
-    try {
-      const { data: currentFile } = await octokit.repos.getContent({
-        owner,
-        repo,
-        path: githubPath,
-      });
+    // 仅保留 GitHub 更新逻辑
+    const { data: currentFile } = await octokit.repos.getContent({
+      owner,
+      repo,
+      path: githubPath,
+    });
 
-      await octokit.repos.createOrUpdateFileContents({
-        owner,
-        repo,
-        path: githubPath,
-        message: 'Update resources',
-        content: Buffer.from(JSON.stringify(updatedResources, null, 2)).toString('base64'),
-        sha: currentFile.sha,
-      });
-    } catch (githubError) {
-      console.error('Error updating GitHub resources, falling back to local file:', githubError);
-      // GitHub 更新失败，继续执行本地文件更新
-    }
-
-    // 无论 GitHub 更新是否成功，都更新本地文件
-    fs.writeFileSync(localPath, JSON.stringify(updatedResources, null, 2));
+    await octokit.repos.createOrUpdateFileContents({
+      owner,
+      repo,
+      path: githubPath,
+      message: 'Update resources',
+      content: Buffer.from(JSON.stringify(updatedResources, null, 2)).toString('base64'),
+      sha: currentFile.sha,
+    });
 
     return NextResponse.json(updatedResources);
   } catch (error) {
     console.error('Error updating resources:', error);
-    return NextResponse.json({ error: 'Failed to update resources' }, { status: 500 });
+    return NextResponse.json({ 
+      error: 'Failed to update resources. Please ensure GitHub connection is valid.' 
+    }, { status: 500 });
   }
 }
