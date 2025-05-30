@@ -36,12 +36,11 @@ export default function AdminPage() {
     fetchResources();
   }, [checkAuth]);
 
-  // 修改fetchResources函数
   const fetchResources = async () => {
     setIsLoading(true);
     setError(null);
     try {
-      // 改为使用本地资源
+      // 使用本地资源而不是GitHub资源
       const response = await fetch('/api/resources');
       if (!response.ok) {
         throw new Error('Failed to fetch resources');
@@ -69,6 +68,32 @@ export default function AdminPage() {
 
   const handleEdit = (index) => {
     setEditingIndex(index);
+  };
+
+  const handleDelete = (index) => {
+    if (window.confirm('确定要删除这个资源吗？')) {
+      const updatedResources = [...resources];
+      updatedResources.splice(index, 1);
+      
+      fetch('/api/resources', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatedResources),
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Failed to delete resource');
+        }
+        return response.json();
+      })
+      .then(() => {
+        fetchResources(); // 重新获取最新数据
+      })
+      .catch(error => {
+        console.error('Error deleting resource:', error);
+        setError('Failed to delete resource. Please try again.');
+      });
+    }
   };
 
   const handleSave = async (index) => {
@@ -148,7 +173,10 @@ export default function AdminPage() {
                 {editingIndex === index ? (
                   <Button onClick={() => handleSave(index)}>Save</Button>
                 ) : (
-                  <Button onClick={() => handleEdit(index)}>Edit</Button>
+                  <div className="flex space-x-2">
+                    <Button onClick={() => handleEdit(index)}>Edit</Button>
+                    <Button variant="destructive" onClick={() => handleDelete(index)}>Delete</Button>
+                  </div>
                 )}
               </TableCell>
             </TableRow>

@@ -54,23 +54,28 @@ export async function POST(req) {
   const updatedResources = await req.json();
 
   try {
-    const { data: currentFile } = await octokit.repos.getContent({
-      owner,
-      repo,
-      path: githubPath,
-    });
+    // 尝试更新 GitHub 仓库
+    try {
+      const { data: currentFile } = await octokit.repos.getContent({
+        owner,
+        repo,
+        path: githubPath,
+      });
 
-    await octokit.repos.createOrUpdateFileContents({
-      owner,
-      repo,
-      path: githubPath,
-      message: 'Update resources',
-      content: Buffer.from(JSON.stringify(updatedResources, null, 2)).toString('base64'),
-      sha: currentFile.sha,
-    });
+      await octokit.repos.createOrUpdateFileContents({
+        owner,
+        repo,
+        path: githubPath,
+        message: 'Update resources',
+        content: Buffer.from(JSON.stringify(updatedResources, null, 2)).toString('base64'),
+        sha: currentFile.sha,
+      });
+    } catch (githubError) {
+      console.error('Error updating GitHub resources, falling back to local file:', githubError);
+      // GitHub 更新失败，继续执行本地文件更新
+    }
 
-    // Update local file as well
-    // 取消注释这一行
+    // 无论 GitHub 更新是否成功，都更新本地文件
     fs.writeFileSync(localPath, JSON.stringify(updatedResources, null, 2));
 
     return NextResponse.json(updatedResources);
