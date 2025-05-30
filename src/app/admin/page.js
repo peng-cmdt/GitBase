@@ -109,16 +109,13 @@ export default function AdminPage() {
         body: JSON.stringify(updatedResources),
       });
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.details || '保存失败');
+        throw new Error('Failed to save resources');
       }
       await fetchResources(); // Fetch the latest data after saving
       setEditingIndex(null);
     } catch (error) {
-      console.error('保存错误:', error);
-      setError(`保存失败: ${error.message}`);
-      // 回滚本地修改
-      setResources(prev => [...prev.slice(0, -1)]); 
+      console.error('Error saving resources:', error);
+      setError('Failed to save resources. Please try again.');
     }
   };
 
