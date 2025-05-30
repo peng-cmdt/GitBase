@@ -36,11 +36,13 @@ export default function AdminPage() {
     fetchResources();
   }, [checkAuth]);
 
+  // 修改fetchResources函数
   const fetchResources = async () => {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await fetch('/api/resources?source=github');
+      // 改为使用本地资源
+      const response = await fetch('/api/resources');
       if (!response.ok) {
         throw new Error('Failed to fetch resources');
       }

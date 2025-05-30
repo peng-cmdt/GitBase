@@ -70,7 +70,8 @@ export async function POST(req) {
     });
 
     // Update local file as well
-    //fs.writeFileSync(localPath, JSON.stringify(updatedResources, null, 2));
+    // 取消注释这一行
+    fs.writeFileSync(localPath, JSON.stringify(updatedResources, null, 2));
 
     return NextResponse.json(updatedResources);
   } catch (error) {
