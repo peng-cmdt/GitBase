@@ -32,7 +32,7 @@
 
 1. Clone the repository:
    ```
-   git clone https://github.com/qiayue/gitbase.git
+   git clone https://github.com/peng-cmdt/GitBase.git
    cd gitbase
    ```
 
