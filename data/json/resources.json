@@ -33,5 +33,10 @@
     "name": "Music Player",
     "description": "Online Music Player",
     "url": "https://musicplayer-olive.vercel.app/"
+  },
+  {
+    "name": "云梦小吏",
+    "description": "一个完整的介绍单元",
+    "url": "https://www.google.com"
   }
 ]
